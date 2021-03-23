@@ -7,7 +7,6 @@ output:
 
 
 
-
 ## Loading and preprocessing the data
 
 The data in this analysis is data from a personal activity monitoring device. It consists of the date, the amount of steps and the time interval in which the steps were measured.
