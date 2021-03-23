@@ -48,13 +48,12 @@ median(total_steps$steps)
 The average daily activity pattern is obtained by calculating the average for each interval across all days.
 The maximum amount of steps are taken from this calculation.
 
-```{r max interval, echo=TRUE,fig.width=4,fig.height=4}
+```{r maxinterval,echo=TRUE,fig.width=4,fig.height=4}
 mean_steps_by_interval <- aggregate(steps~interval,data=df,mean)
 mean_steps_by_interval$interval[which.max(mean_steps_by_interval$steps)]
 
 ggplot(mean_steps_by_interval)+
   geom_line(aes(interval,steps))
-
 
 ```
 
@@ -71,6 +70,7 @@ na_pos <- which(is.na(df_i$steps))
 df_i$steps[na_pos] <- mean_steps_by_interval$steps[match(df_i$interval[na_pos],mean_steps_by_interval$interval)]
 
 ```
+
 # Total steps
 With the imputed data, the total steps are calculated and plotted.
 ```{r total_imputed, echo=TRUE,fig.width=4,fig.height=4}

@@ -77,7 +77,7 @@ ggplot(mean_steps_by_interval)+
   geom_line(aes(interval,steps))
 ```
 
-![](PA1_template_files/figure-html/max interval-1.png)<!-- -->
+![](PA1_template_files/figure-html/maxinterval-1.png)<!-- -->
 
 
 ## Imputing missing values
@@ -98,6 +98,7 @@ df_i <- df
 na_pos <- which(is.na(df_i$steps))
 df_i$steps[na_pos] <- mean_steps_by_interval$steps[match(df_i$interval[na_pos],mean_steps_by_interval$interval)]
 ```
+
 # Total steps
 With the imputed data, the total steps are calculated and plotted.
 
