@@ -1,102 +1,147 @@
 ---
-title: "reproducibleresearch_ex1"
-output: html_document
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(dplyr)
-library(ggplot2)
-Sys.setlocale("LC_TIME", "C")
-```
 
-## Activity Data Set
+
+
+## Loading and preprocessing the data
 
 The data in this analysis is data from a personal activity monitoring device. It consists of the date, the amount of steps and the time interval in which the steps were measured.
 In the following step the data is loaded and the date is transformed to date format from a character format.
 
-```{r cars,echo=TRUE}
+
+```r
 df <- read.table("./activity/activity.csv",sep=",",na.strings="NA",header = TRUE)
 df$date <- as.Date(df$date, "%Y-%m-%d")
 ```
 
-## Total number of steps taken each day
+
+## What is mean total number of steps taken per day?
 
 The following code calculates the total number of steps for each day. The plot shows the result.
 
-```{r total_steps, echo=TRUE,fig.width=4,fig.height=4}
+
+```r
 total_steps <- aggregate(steps~date,data=df,sum)
 
 ggplot(total_steps)+
   geom_histogram(aes(steps))
 ```
 
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
 
-## Mean and median steps each day
+![](PA1_template_files/figure-html/total_steps-1.png)<!-- -->
 
 The mean and median steps for each day are calculated.
 
-```{r mean_median_steps, echo=TRUE}
-mean_steps <- aggregate(steps~date,data=df,mean)
-mean_steps
 
-median_steps <- aggregate(steps~date,data=df,median)
-median_steps
+```r
+mean(total_steps$steps)
 ```
 
-```{r mean_steps_plot, echo=TRUE,fig.width=4,fig.height=4}
-
-ggplot(mean_steps)+
-  geom_line(aes(date,steps))
-
+```
+## [1] 10766.19
 ```
 
-## Daily activity
+```r
+median(total_steps$steps)
+```
+
+```
+## [1] 10765
+```
+
+
+## What is the average daily activity pattern?
+
 The average daily activity pattern is obtained by calculating the average for each interval across all days.
 The maximum amount of steps are taken from this calculation.
 
-```{r max interval, echo=TRUE}
+
+```r
 mean_steps_by_interval <- aggregate(steps~interval,data=df,mean)
 mean_steps_by_interval$interval[which.max(mean_steps_by_interval$steps)]
-
 ```
 
-## Imputing missing data
+```
+## [1] 835
+```
+
+```r
+ggplot(mean_steps_by_interval)+
+  geom_line(aes(interval,steps))
+```
+
+![](PA1_template_files/figure-html/max interval-1.png)<!-- -->
+
+
+## Imputing missing values
+
 The missing values in the steps variable are replace by the average steps for the concerning time interval. 
 
-```{r impute, echo=TRUE}
-sum(complete.cases(df))
 
+```r
+sum(complete.cases(df))
+```
+
+```
+## [1] 15264
+```
+
+```r
 df_i <- df
 na_pos <- which(is.na(df_i$steps))
 df_i$steps[na_pos] <- mean_steps_by_interval$steps[match(df_i$interval[na_pos],mean_steps_by_interval$interval)]
-
 ```
-
-## Total number of steps with imputed data
+# Total steps
 With the imputed data, the total steps are calculated and plotted.
-```{r total_imputed, echo=TRUE,fig.width=4,fig.height=4}
+
+```r
 total_steps_i <- aggregate(steps~date,data=df_i,sum)
 
 ggplot(total_steps_i)+
   geom_histogram(aes(steps))
-
 ```
 
-## Mean number of steps with imputed data
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
+
+![](PA1_template_files/figure-html/total_imputed-1.png)<!-- -->
+
+# Mean and median steps
+
 The mean and median steps on each date is calculated with the imputed data set as well. 
-```{r mean_median_steps filled, echo=TRUE}
-mean_steps <- aggregate(steps~date,data=df_i,mean)
-mean_steps
 
-median_steps <- aggregate(steps~date,data=df_i,median)
-median_steps
+```r
+mean(total_steps_i$steps)
 ```
 
-### Comparison the averga steps across weekdays and weekends
+```
+## [1] 10766.19
+```
+
+```r
+median(total_steps_i$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+## Are there differences in activity patterns between weekdays and weekends?
+
+
 To the imputed data set a new column is added, indicating if the date is a weekday or not.
 Using this column, the mean steps across time intervals and the categories weekday/weekend are calculated and plotted.
-```{r weekdays, echo=TRUE,fig.width=8,fig.height=4}
+
+```r
 df_i$days <- weekdays(df_i$date) %in% c("Saturday","Sunday")
 df_i$days <- c("weekend","weekday")[match(df_i$days,c(TRUE,FALSE))]
 df_i$days <- factor(df_i$days)
@@ -106,7 +151,6 @@ mean_per_days <- aggregate(steps~days+interval,data=df_i,mean)
 ggplot(mean_per_days)+
   geom_line(aes(x=interval,y=steps))+
   facet_wrap(~days)
-
 ```
 
-
+![](PA1_template_files/figure-html/weekdays-1.png)<!-- -->
